@@ -37,6 +37,21 @@
   background: rgba(31, 122, 58, 0.08);
   color: var(--green-600);
 }
+.topbar .actions .action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--green-700);
+  border-radius: 8px;
+}
+.topbar .actions .action-btn:hover {
+  background: rgba(31, 122, 58, 0.08);
+  color: var(--green-600);
+}
 .topbar h1 {
   margin: 0;
   color: var(--brown-700);
@@ -54,6 +69,66 @@
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 6px 16px rgba(31, 122, 58, 0.08);
+}
+.panel.contas-table {
+  margin-top: 1rem;
+}
+.contas-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panel.contas-table h2 {
+  margin: 0 0 0.75rem;
+  color: var(--brown-700);
+}
+.close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--green-700);
+  border-radius: 8px;
+}
+.close-btn:hover {
+  background: rgba(31, 122, 58, 0.08);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  border-bottom: 1px solid rgba(31, 122, 58, 0.12);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.table th {
+  background: rgba(31, 122, 58, 0.06);
+  color: var(--green-700);
+  font-weight: 600;
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+.page-btn {
+  border: 1px solid rgba(31, 122, 58, 0.2);
+  background: #fff;
+  color: var(--green-700);
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+}
+.page-btn:disabled {
+  opacity: 0.6;
+}
+.page-info {
+  color: var(--brown-700);
 }
 @media (max-width: 1200px) {
   .cards {

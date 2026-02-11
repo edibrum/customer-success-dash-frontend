@@ -8,6 +8,13 @@
   </div>
   
   <div class="card-icon-wrapper">
-    <i [className]="iconClass"></i>
+    <button class="card-icon-btn" (click)="onIconClick()" 
+            [attr.title]="actionTooltip || title" 
+            [attr.aria-label]="actionTooltip || title"
+            [class.wallet]="iconClass==='icon-wallet'">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path [attr.d]="iconPath()" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+      </svg>
+    </button>
   </div>
 </div>

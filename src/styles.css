@@ -9,10 +9,12 @@
   --green-600: #2a9c4c;
   --green-500: #37b45a;
   --green-300: #7cd48c;
+  --green-100: #d0e4d4;
   --beige-200: #f2e8d5;
   --beige-300: #e8dcc5;
   --brown-700: #5b3a29;
   --brown-500: #8a5b3e;
+  --brown-100: #ecd6c9;
 }
 
 html, body {
