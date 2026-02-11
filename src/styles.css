@@ -1,1 +1,48 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-green: #1a5d2c; /* menu-lateral */
+  --accent-green: #4ade80;  /* ícones-seleção */
+  --bg-light: #f8fafc;     /* fundo default */
+  /* outras variações úteis */
+  --green-700: #1f7a3a;
+  --green-600: #2a9c4c;
+  --green-500: #37b45a;
+  --green-300: #7cd48c;
+  --beige-200: #f2e8d5;
+  --beige-300: #e8dcc5;
+  --brown-700: #5b3a29;
+  --brown-500: #8a5b3e;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg-light);
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+main.main {
+    display: none !important;
+}
+
+.main-wrapper {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: var(--primary-green);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-area {
+  flex: 1;
+  background-color: var(--bg-light);
+  overflow-y: auto;
+  padding: 2rem;
+}

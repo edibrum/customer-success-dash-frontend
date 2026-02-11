@@ -1,0 +1,42 @@
+:host {
+  display: block;
+}
+
+.home-wrap {
+  min-height: 100vh;
+  background: var(--green-700);
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+
+.home-card {
+  background: #fff;
+  color: var(--green-700);
+  border-radius: 14px;
+  border: 1px solid rgba(31, 122, 58, 0.15);
+  box-shadow: 0 6px 16px rgba(31, 122, 58, 0.2);
+  padding: 2rem 2.5rem;
+  text-align: center;
+}
+
+.home-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.home-sub {
+  margin-top: 0.5rem;
+  color: var(--green-600);
+}
+
+.home-btn {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--green-600);
+  background: var(--green-600);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}

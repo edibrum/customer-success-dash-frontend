@@ -1,0 +1,59 @@
+<div class="layout" [class.no-sidebar]="!sidebarOpen()">
+  <app-sidebar *ngIf="sidebarOpen()"></app-sidebar>
+  <section class="content">
+    <header class="topbar">
+      <button class="menu" (click)="toggleSidebar()" aria-label="Toggle sidebar" title="Toggle sidebar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <h1>Dashboard</h1>
+      <div class="actions">
+        <span class="bell">🔔</span>
+      </div>
+    </header>
+
+    <div class="cards">
+      <app-info-card 
+        title="Total de Clientes na Carteira" 
+        [value]="totalClientes()" 
+        trend="+12.5%" 
+        description="from last month"
+        iconClass="icon-users"
+        [isPositive]="true">
+      </app-info-card>
+
+      <app-info-card 
+        title="Taxa de Conversão" 
+        value="68.4%" 
+        trend="+5.2%" 
+        description="from target"
+        iconClass="icon-target"
+        [isPositive]="true">
+      </app-info-card>
+
+      <app-info-card 
+        title="Gap de Produtos" 
+        value="342" 
+        trend="Clientes sem cartão/PIX"
+        description=""
+        iconClass="icon-card"
+        [isPositive]="false">
+      </app-info-card>
+
+      <app-info-card 
+        title="Tarefas Pendentes" 
+        value="23" 
+        trend="Vencendo hoje"
+        description=""
+        iconClass="icon-check"
+        [isPositive]="false">
+      </app-info-card>
+    </div>
+
+    <div class="panel performance">
+      <h2>Performance de Vendas</h2>
+      <p>Receita mensal vs Meta</p>
+    </div>
+  </section>
+</div>
