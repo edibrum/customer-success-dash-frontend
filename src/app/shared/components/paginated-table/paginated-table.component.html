@@ -39,8 +39,8 @@
   </table>
 
   <div class="pagination">
-    <button class="page-btn" (click)="prevPage()" [disabled]="page() === 0">Anterior</button>
-    <span class="page-info">Página {{ page() + 1 }} de {{ totalPages() }}</span>
-    <button class="page-btn" (click)="nextPage()" [disabled]="page() >= totalPages() - 1">Próxima</button>
+    <button class="page-btn" (click)="prevPage()" [disabled]="effectivePage() === 0">Anterior</button>
+    <span class="page-info">Página {{ effectivePage() + 1 }} de {{ effectiveTotalPages() }}</span>
+    <button class="page-btn" (click)="nextPageListaContasTotal()" [disabled]="effectivePage() >= effectiveTotalPages() - 1">Próxima</button>
   </div>
 </div>

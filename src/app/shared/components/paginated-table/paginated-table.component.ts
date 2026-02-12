@@ -9,7 +9,6 @@ export interface TableColumn {
   locale?: string;
   digitsInfo?: string;
   value?: (row: any) => any;
-  cellClass?: (row: any) => string | null;
 }
 
 @Component({
@@ -24,7 +23,10 @@ export class PaginatedTableComponent implements OnChanges, OnInit {
   @Input() rows: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() pageSize: number = 10;
+  @Input() externalPage?: number;
+  @Input() externalTotalPages?: number;
   @Output() close = new EventEmitter<void>();
+  @Output() pageChange = new EventEmitter<number>();
 
   page = signal<number>(0);
   private rowsSig = signal<any[]>([]);
@@ -41,19 +43,38 @@ export class PaginatedTableComponent implements OnChanges, OnInit {
     return all.slice(start, start + this.pageSize);
   });
 
+  effectivePage(): number {
+    return this.externalPage ?? this.page();
+  }
+  effectiveTotalPages(): number {
+    return this.externalTotalPages ?? this.totalPages();
+  }
+
   closeClick() {
     console.log(`this.displayedRows()===`, this.displayedRows());
     this.page.set(0);
     this.close.emit();
   }
-  nextPage() {
-    const p = this.page();
-    const tp = this.totalPages();
-    if (p < tp - 1) this.page.set(p + 1);
+  nextPageListaContasTotal() {
+    const p = this.effectivePage();
+    const tp = this.effectiveTotalPages();
+    if (p < tp - 1) {
+      if (this.externalPage !== undefined) {
+        this.pageChange.emit(p + 1);
+      } else {
+        this.page.set(p + 1);
+      }
+    }
   }
   prevPage() {
-    const p = this.page();
-    if (p > 0) this.page.set(p - 1);
+    const p = this.effectivePage();
+    if (p > 0) {
+      if (this.externalPage !== undefined) {
+        this.pageChange.emit(p - 1);
+      } else {
+        this.page.set(p - 1);
+      }
+    }
   }
 
   getValue(row: any, col: TableColumn): any {

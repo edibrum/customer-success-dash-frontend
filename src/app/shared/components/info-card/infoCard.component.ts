@@ -36,6 +36,8 @@ export class InfoCardComponent {
         return 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01';
       case 'icon-plus-circle':
         return 'M12 3a9 9 0 109 9 9.01 9.01 0 00-9-9zm0 4v10m-5-5h10';
+      case 'icon-qrcode':
+        return 'M3 3h8v8H3V3zm2 2v4h4V5H5zm10-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm10 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h6v2h-6v-2z';
       case 'icon-expand':
         return 'M6 9l6 6 6-6';
       case 'icon-info':

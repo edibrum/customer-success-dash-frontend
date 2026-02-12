@@ -22,30 +22,41 @@
       <app-info-card 
         title="Total de Contas na Carteira" 
         [value]="totalContasDoGerente()" 
-        iconClass="icon-list"
+        iconClass="icon-users"
         actionTooltip="Ver listagem"
         [isPositive]="true"
-        (action)="onWalletCardAction()">
+        (action)="onTotalContasTableOpen()">
+      </app-info-card>
+
+      <app-graph-card 
+        title="Distribuição de Produtos"
+        type="pie"
+        dataType="percent"
+        [values]="[10,40,50]"
+        [labels]="['PIX','CARTÃO CRÉDITO','OUTROS']"
+        [actionChartAreas]="[actionPIXArea, actionCREDITOArea, actionOUTROSArea]">
+      </app-graph-card>
+
+      <app-info-card 
+        title="Gap de Produtos: PIX" 
+        [value]="percentualClientesPIX() + '%'" 
+        [trend]="totalContratosPIXDoGerente()" 
+        description="Clientes com PIX"
+        actionTooltip="Ver listagem"
+        iconClass="icon-qrcode"
+        [isPositive]="percentualClientesPIX() > 0"
+        (action)="openContatosPIXTableOpen()">
       </app-info-card>
 
       <app-info-card 
-        title="Taxa de Conversão" 
-        value="68.4%" 
-        trend="+5.2%" 
-        description="from target"
-        iconClass="icon-target"
-        [isPositive]="true"
-        (action)="onConversionCardAction()">
-      </app-info-card>
-
-      <app-info-card 
-        title="Gap de Produtos" 
-        value="342" 
-        trend="Clientes sem cartão/PIX"
-        description=""
+        title="Gap de Produtos: CARTÃO CRÉDITO" 
+         [value]="percentualClientesCREDITO() + '%'" 
+        [trend]="totalContratosCREDITODoGerente()" 
+        description="Clientes com CREDITO"
+        actionTooltip="Ver listagem"
         iconClass="icon-card"
-        [isPositive]="false"
-        (action)="onGapCardAction()">
+        [isPositive]="true"
+        (action)="openContatosCREDITOTableOpen()">
       </app-info-card>
 
       <app-info-card 
@@ -59,18 +70,36 @@
       </app-info-card>
     </div>
 
-    <div class="panel performance" *ngIf="!showContasTable()">
+    <div class="panel performance" *ngIf="!showContasTable() && !showContratosPIXTable() && !showContratosCREDITOTable()">
       <h2>Performance de Vendas</h2>
       <p>Receita mensal vs Meta</p>
     </div>
 
     <app-paginated-table 
       *ngIf="showContasTable()"
-      title="Contas do Gerente"
+      title="Contas da Carteira"
       [rows]="contas()"
       [columns]="contasColumns"
       [pageSize]="10"
       (close)="closeContasTable()"
+    ></app-paginated-table>
+
+    <app-paginated-table 
+      *ngIf="showContratosPIXTable()"
+      title="Contratos PIX"
+      [rows]="contratosPIX()"
+      [columns]="contratoColumns"
+      [pageSize]="10"
+      (close)="closeContratosPIXTable()"
+    ></app-paginated-table>
+
+    <app-paginated-table 
+      *ngIf="showContratosCREDITOTable()"
+      title="Contratos CARTÃO CRÉDITO"
+      [rows]="contratosCREDITO()"
+      [columns]="contratoColumns"
+      [pageSize]="10"
+      (close)="closeContratosCREDITOTable()"
     ></app-paginated-table>
   </section>
 </div>

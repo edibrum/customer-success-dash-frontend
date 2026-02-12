@@ -1,0 +1,32 @@
+<div class="graph-card">
+  <div class="header">
+    <span class="title">{{ title }}</span>
+  </div>
+  <div class="content" *ngIf="type === 'pie'">
+    <svg width="160" height="160" viewBox="0 0 160 160" aria-hidden="true">
+      <g>
+        <circle *ngFor="let v of values; let i = index; trackBy: trackItem"
+                [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius"
+                fill="none"
+                [attr.stroke]="colors[i % colors.length]"
+                [attr.stroke-width]="thickness"
+                stroke-linecap="butt"
+                [attr.pointer-events]="'visibleStroke'"
+                style="cursor: pointer;"
+                [attr.stroke-dasharray]="segmentDashArray(i)"
+                [attr.stroke-dashoffset]="segmentDashOffset(i)"
+                [attr.transform]="'rotate(-90 ' + cx + ' ' + cy + ')'"
+                (click)="onSegmentClick(i)" />
+      </g>
+      <circle [attr.cx]="cx" [attr.cy]="cy" [attr.r]="radius - thickness/2" fill="#fff" pointer-events="none"></circle>
+    </svg>
+    <div class="legend">
+      <div class="item" *ngFor="let lbl of labels; let i = index">
+        <span class="dot" [style.background]="colors[i % colors.length]"></span>
+        <span class="text">{{ lbl }}</span>
+        <span class="val" *ngIf="dataType === 'percent'">{{ percent(i) }}%</span>
+        <span class="val" *ngIf="dataType === 'absolute'">{{ values[i] }}</span>
+      </div>
+    </div>
+  </div>
+</div>

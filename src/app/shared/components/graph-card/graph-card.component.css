@@ -1,0 +1,36 @@
+.graph-card {
+  background: #fff;
+  border: 1px solid rgba(31, 122, 58, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 6px 16px rgba(31, 122, 58, 0.08);
+}
+.header .title {
+  font-weight: 600;
+  color: var(--brown-700);
+}
+.content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.legend .item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.legend .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.legend .val {
+  margin-left: auto;
+  color: var(--green-700);
+  font-weight: 600;
+}
