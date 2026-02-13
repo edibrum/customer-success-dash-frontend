@@ -1,16 +1,14 @@
 import { Component, signal, computed } from '@angular/core';
-import { CommonModule, formatDate } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { InfoCardComponent } from '../../shared/components/info-card/infoCard.component';
 import { PaginatedTableComponent } from '../../shared/components/paginated-table/paginated-table.component';
 import { GraphCardComponent } from '../../shared/components/graph-card/graph-card.component';
-// import { ClientesService } from '../../services/clientes.service';
 import { ContasService } from '../../services/contas.service';
-import { ClienteDtoResponse } from '../../models/cliente';
 import { ContaDtoResponse } from '../../models/contas';
 import { PageResponse } from '../../shared/utils/pagination';
 import { ContratosService } from '../../services/contratos.service';
-import { ContratoDtoResponse } from '../../models/contratos';
+import { ResumoPorProdutosDtoResponse } from '../../models/contratos';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,22 +19,40 @@ import { ContratoDtoResponse } from '../../models/contratos';
 })
 
 export class DashboardComponent {
+  //GERAIS
   sidebarOpen = signal<boolean>(true);
-  
-  //CARD - CONTAS (CLIENTES) ASSOCIADAS AO GERENTE LOGADO
-  totalContasDoGerente = signal<number>(0);
-  contas = signal<ContaDtoResponse[]>([]);
-  showContasTable = signal<boolean>(false);
-  showContratosPIXTable = signal<boolean>(false);
-  showContratosCREDITOTable = signal<boolean>(false);
+  isShowingOneTable = signal<boolean>(false);
+  /* TODO: verificar depois quanto à funcionalidade de PAGINAÇÃO DAS TABELAS
+  tentar manter variáveis gerais para todas as tabelas uma vez que só poderá ter uma tabela aberta por vez em tela ... */
   pageListaContasTotal = signal<number>(0);
   pageSizeListaContasTotal = 10;
+  totalPages = computed<number>(() => Math.max(1, Math.ceil(this.contas().length / this.pageSizeListaContasTotal)));
+  
+  // CONTAS ASSOCIADAS AO GERENTE (sem pensar em contratos/produtos contratados)
+  totalContasDoGerente = signal<number>(0);
+  showContasTable = signal<boolean>(false);
+  contas = signal<ContaDtoResponse[]>([]);
   displayedContas = computed<ContaDtoResponse[]>(() => {
     const all = this.contas();
     const start = this.pageListaContasTotal() * this.pageSizeListaContasTotal;
     return all.slice(start, start + this.pageSizeListaContasTotal);
   });
-  totalPages = computed<number>(() => Math.max(1, Math.ceil(this.contas().length / this.pageSizeListaContasTotal)));
+  
+  // CONTRATOS (RELAÇÃO CONTAS COM PRODUTOS) ASSOCIADOS AO GERENTE
+  resumoContratosDoGerente: ResumoPorProdutosDtoResponse[] = [];
+  //PRODUTO PIX:
+  resumoPIX: ResumoPorProdutosDtoResponse | null = null;
+  percentualClientesPIX = signal<number>(0);
+  showContratosPIXTable = signal<boolean>(false);
+  showGapsPIXTable = signal<boolean>(false);
+  //PRODUTO CARTÃO DE CRÉDITO:
+  resumoCARTAOCREDITO: ResumoPorProdutosDtoResponse | null = null;
+  percentualClientesCARTAOCREDITO = signal<number>(0);
+  showContratosCREDITOTable = signal<boolean>(false);
+  showGapsCREDITOTable = signal<boolean>(false);
+  //TODO: para futuros produtos bastaria seguir a mesma lógica aqui (ver HTML para compreender melhor)
+
+  // ----------------------- COLUNAS DE TABELAS - para o componente <app-paginated-table> -------------------------------------------
   contasColumns = [
     { header: 'Titular', field: 'titular.pessoa.nome' },
     { header: 'PF/PJ', field: 'titular.pessoa.tipoPessoa', cellClass: (row: any) => {
@@ -53,14 +69,6 @@ export class DashboardComponent {
     // { header: 'Agência', field: 'agencia' },
     // { header: 'Gerente', field: 'gerente.pessoa.nome' }
   ];
-  
-  //CARD - CONTRATOS (PRODUTOS) ASSOCIADOS AO GERENTE LOGADO
-  totalContratosPIXDoGerente = signal<number>(0);
-  contratosPIX = signal<ContratoDtoResponse[]>([]);
-  percentualClientesPIX = signal<number>(0);
-  totalContratosCREDITODoGerente = signal<number>(0);
-  contratosCREDITO = signal<ContratoDtoResponse[]>([]);
-  percentualClientesCREDITO = signal<number>(0);
   contratoColumns = [
     { header: 'Titular', field: 'conta.titular.pessoa.nome' },
     { header: 'PF/PJ', field: 'conta.titular.pessoa.tipoPessoa', cellClass: (row: any) => {
@@ -77,10 +85,12 @@ export class DashboardComponent {
     // { header: 'Agência', field: 'agencia' },
     // { header: 'Gerente', field: 'gerente.pessoa.nome' }
   ];
+  // ----------------------- COLUNAS DE TABELAS UTILIZADAS -------------------------------------------
 
-  //  ----------- CARREGAR LISTAGENS UTILIZADAS PARA O DASHBOARD DE MANEIRA GERAL ----------- 
+
+  //  ----------- LISTAGENS UTILIZADAS PARA O DASHBOARD DE MANEIRA GERAL ----------- 
   constructor(private contasService: ContasService, private contratosService: ContratosService) {
-    //CONTAS - AQUI SABEMOS O TOTAL DE CLIENTS ASSOCIADOS AO GERENTE
+
     this.contasService.getContasPorGerenteId(1).subscribe({
       next: (page: PageResponse<ContaDtoResponse>) => {
         this.totalContasDoGerente.set(page?.totalElements ?? 0);
@@ -88,66 +98,77 @@ export class DashboardComponent {
         console.log('totalElements', page?.totalElements);
         console.log('contas-length', this.contas().length);
         console.log('contas', this.contas());
-        this.updatePercentuais();
+        //CONTAS - AQUI SABEMOS O TOTAL DE CLIENTS ASSOCIADOS AO GERENTE
+        // IMPORTANTE: AQUI USANDO A ROTA DE BUSCA PAGINADA COM FILTROS GENÉRICA DO contasController 
       },
       error: () => this.totalContasDoGerente.set(0)
     });
 
-    //CONTRATOS - AQUI SABEMOS OS CONTRATOS PIX DO GERENTE
-    this.contratosService.getContratosPIXPorGerenteId(1).subscribe({
-      next: (page: PageResponse<ContratoDtoResponse>) => {
-        this.totalContratosPIXDoGerente.set(page?.totalElements ?? 0);
-        this.contratosPIX.set(page?.content ?? []);
-        console.log('totalElements', page?.totalElements);
-        console.log('contratosPIX-length', this.contratosPIX().length);
-        console.log('contratosPIX', this.contratosPIX());
-        this.updatePercentuais();
+    this.contratosService.getResumoContratosPorGerenteId(1).subscribe({
+      next: (response: ResumoPorProdutosDtoResponse[]) => {
+        this.resumoContratosDoGerente = response ? response :[];
+        this.setResumoValores(this.resumoContratosDoGerente);
+        console.log('totalElements', response.length);
+        // IMPORTANTE: HÁ UMA OUTRA ROTA TAMBÉM FUNCIONAL DE BUSCA PAGINADA COM FILTROS no contratosController, MAS ESTA 
+        // AQUI COM O RETORNO DO TIPO ResumoPorProdutosDtoResponse[] FOI PREPARADA PARA O DASHBOARD ESPECIFICAMENTE
+        // ResumoPorProdutosDtoResponse {
+        //   produtoCodigo: string;
+        //   produtoDescricao: string;
+        //   contratosVigentes: PageResponse<ContratoDtoResponse>;
+        //   contasGapDoProduto: PageResponse<ContaDtoResponse>;
+        // }
       },
-      error: () => this.totalContratosPIXDoGerente.set(0)
-    });
-
-    //CONTRATOS - AQUI SABEMOS CONTRATAOS CREDITO DO GERENTE
-    this.contratosService.getContratosCREDITOPorGerenteId(1).subscribe({
-      next: (page: PageResponse<ContratoDtoResponse>) => {
-        this.totalContratosCREDITODoGerente.set(page?.totalElements ?? 0);
-        this.contratosCREDITO.set(page?.content ?? []);
-        console.log('totalElements', page?.totalElements);
-        console.log('contratosCREDITO-length', this.contratosCREDITO().length);
-        console.log('contratosCREDITO', this.contratosCREDITO());
-        this.updatePercentuais();
-      },
-      error: () => this.totalContratosCREDITODoGerente.set(0)
+      error: () => this.resumoContratosDoGerente = []
     });
 
   }
 
-  //  ----------- ATUALIZAR OS VALORES UTILIZADOS PARA OS TOTAIS PERCENTUAIS DE CADA PRODUTO (% DE CLIENTES COM CADA PRODUTO CONTRATADO) ----------- 
+  private setResumoValores(resumo: ResumoPorProdutosDtoResponse[]) {
+    if (resumo?.length > 0) {
+      resumo.forEach((item) => {
+        //Produto PIX:
+        if (item?.produtoDescricao === 'PIX') {
+          this.resumoPIX = item;
+        }
+        //Produto Cartão de Crédito:
+        if (item?.produtoDescricao === 'CARTÃO DE CRÉDITO') {
+          this.resumoCARTAOCREDITO = item;
+        }
+        //TODO: Produtos Futuros:
+        // . . .
+        this.updatePercentuais();
+      });
+    }
+    
+  }
+
+  //  ----------- ATUALIZAR OS VALORES UTILIZADOS PARA OS 
+  // PERCENTUAIS DE CADA PRODUTO (% DE CLIENTES COM CADA 
+  // PRODUTO CONTRATADO) ----------- 
   private updatePercentuais() {
     const total = Number(this.totalContasDoGerente());
-    const pix = Number(this.totalContratosPIXDoGerente());
-    const credito = Number(this.totalContratosCREDITODoGerente());
-    if (total > 0) {
+    const pix = Number(this?.resumoPIX?.contratosVigentes?.totalElements ?? 0);
+    const credito = Number(this?.resumoCARTAOCREDITO?.contratosVigentes?.totalElements ?? 0);
+
+    if (total > 0 && pix != null && credito != null) {
       this.percentualClientesPIX.set(Math.round((pix / total) * 100));
-      this.percentualClientesCREDITO.set(Math.round((credito / total) * 100));
+      this.percentualClientesCARTAOCREDITO.set(Math.round((credito / total) * 100));
     } else {
       this.percentualClientesPIX.set(0);
-      this.percentualClientesCREDITO.set(0);
+      this.percentualClientesCARTAOCREDITO.set(0);
     }
   }
 
-  //  ----------- GRÁFICO DE SETORES ----------- 
-  actionPIXArea = () => this.openContatosCREDITOTableOpen();
-  actionCREDITOArea = () => this.openContatosCREDITOTableOpen();
-  actionOUTROSArea = () => console.log('PIE segment: OUTROS');
-
-  //  ----------- CARD TOTAL DE CLIENTES DO GERENTE  -----------
+  //  [TOTAL DE CLIENTES DO GERENTE]  -----------------------------------------------------
   onTotalContasTableOpen() {
     this.showContasTable.set(!this.showContasTable());
+    this.isShowingOneTable.set(true);
   }
 
   closeContasTable() {
     this.showContasTable.set(false);
     this.pageListaContasTotal.set(0);
+    this.isShowingOneTable.set(false);
   }
 
   nextPageListaContasTotal() {
@@ -160,36 +181,70 @@ export class DashboardComponent {
     const p = this.pageListaContasTotal();
     if (p > 0) this.pageListaContasTotal.set(p - 1);
   }
+  //  ------------------------------------------------ [TOTAL DE CLIENTES DO GERENTE]
+  //  [PIX]  ------------------------------------------------------------------------
+  showListaContratosPIX = () => this.openContratosPIXTable();
 
-  //  ----------- CARD TOTAL DE CONTRATOS - PIX  -----------
-  openContatosPIXTableOpen() {
-    console.log('Gap card action');
+  openContratosPIXTable = () => {
+    console.log('Conversion card action');
     this.showContratosPIXTable.set(!this.showContratosPIXTable());
+    this.isShowingOneTable.set(true);
   }
 
-  closeContratosPIXTable() {
+  closeContratosPIXTable = () => {
+    this.isShowingOneTable.set(false);
     this.showContratosPIXTable.set(false);
   }
 
-  //  ----------- CARD TOTAL DE CONTRATOS - CRÉDITO  -----------
-  openContatosCREDITOTableOpen() {
+  showListaGAPsPIX = () => this.openGapsPIXTable();
+
+  openGapsPIXTable = () => {
+    this.isShowingOneTable.set(true);
+    console.log('Conversion card action');
+    this.showGapsPIXTable.set(!this.showGapsPIXTable());
+  }
+
+  closeGapsPIXTable = () => {
+    this.isShowingOneTable.set(false);
+    this.showGapsPIXTable.set(false);
+  }
+  //  ---------------------------------------------------- [PIX]
+  //  [CARTÃO DE CRÉDITO]  -------------------------------------
+  showListaContratosCREDITO = () => this.openContratosCREDITOTable();
+  openContratosCREDITOTable = () => {
+    this.isShowingOneTable.set(true);
     console.log('Conversion card action');
     this.showContratosCREDITOTable.set(!this.showContratosCREDITOTable());
   }
 
-  closeContratosCREDITOTable() {
+  closeContratosCREDITOTable = () => {
+    this.isShowingOneTable.set(false);
     this.showContratosCREDITOTable.set(false);
   }
 
-  //  ----------- CARD TOTAL DE CONTRATOS - DÉBITO  -----------
-  notifyClick() {
-    console.log('Notifications click');
+  showListaGAPsCREDITO = () => this.openGapsCREDITOTable();
+  openGapsCREDITOTable = () => {
+    this.isShowingOneTable.set(true);
+    console.log('Conversion card action');
+    this.showGapsCREDITOTable.set(!this.showGapsCREDITOTable());
   }
 
-  //  ----------- CARD TOTAL DE CONTRATOS - SEGURO DE VIDA  -----------
-  onTasksCardAction() {
-    console.log('Tasks card action');
+  closeGapsCREDITOTable = () => {
+    this.isShowingOneTable.set(false);
+    this.showGapsCREDITOTable.set(false);
   }
+  //  --------------------------------------- [CARTÃO DE CRÉDITO]
+
+  //TODO: proximos cards e ações a serem implementadas...
+  //  ----------- CARD TOTAL DE CONTRATOS - DÉBITO  -----------
+  // notifyClick() {
+  //   console.log('Notifications click');
+  // }
+
+  //  ----------- CARD TOTAL DE CONTRATOS - SEGURO DE VIDA  -----------
+  // onTasksCardAction() {
+  //   console.log('Tasks card action');
+  // }
 
   // ----------- HEADER - BOTÕES DE AÇÕES NO HEADER DA PÁGINA ----------- 
   toggleSidebar() {

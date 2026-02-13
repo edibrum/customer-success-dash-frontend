@@ -18,63 +18,9 @@
       </div>
     </header>
 
-    <div class="cards">
-      <app-info-card 
-        title="Total de Contas na Carteira" 
-        [value]="totalContasDoGerente()" 
-        iconClass="icon-users"
-        actionTooltip="Ver listagem"
-        [isPositive]="true"
-        (action)="onTotalContasTableOpen()">
-      </app-info-card>
+    <!-- LISTAGENS QUE PODEM SER MOSTRADAS (SOMENTE UMA POR VEZ) -->
 
-      <app-graph-card 
-        title="Distribuição de Produtos"
-        type="pie"
-        dataType="percent"
-        [values]="[10,40,50]"
-        [labels]="['PIX','CARTÃO CRÉDITO','OUTROS']"
-        [actionChartAreas]="[actionPIXArea, actionCREDITOArea, actionOUTROSArea]">
-      </app-graph-card>
-
-      <app-info-card 
-        title="Gap de Produtos: PIX" 
-        [value]="percentualClientesPIX() + '%'" 
-        [trend]="totalContratosPIXDoGerente()" 
-        description="Clientes com PIX"
-        actionTooltip="Ver listagem"
-        iconClass="icon-qrcode"
-        [isPositive]="percentualClientesPIX() > 0"
-        (action)="openContatosPIXTableOpen()">
-      </app-info-card>
-
-      <app-info-card 
-        title="Gap de Produtos: CARTÃO CRÉDITO" 
-         [value]="percentualClientesCREDITO() + '%'" 
-        [trend]="totalContratosCREDITODoGerente()" 
-        description="Clientes com CREDITO"
-        actionTooltip="Ver listagem"
-        iconClass="icon-card"
-        [isPositive]="true"
-        (action)="openContatosCREDITOTableOpen()">
-      </app-info-card>
-
-      <app-info-card 
-        title="Tarefas Pendentes" 
-        value="23" 
-        trend="Vencendo hoje"
-        description=""
-        iconClass="icon-check"
-        [isPositive]="false"
-        (action)="onTasksCardAction()">
-      </app-info-card>
-    </div>
-
-    <div class="panel performance" *ngIf="!showContasTable() && !showContratosPIXTable() && !showContratosCREDITOTable()">
-      <h2>Performance de Vendas</h2>
-      <p>Receita mensal vs Meta</p>
-    </div>
-
+     <!-- 1) LISTA COM OS DADOS DE TODAS AS CONTAS ASSOCIADAS AO GERENTE -->
     <app-paginated-table 
       *ngIf="showContasTable()"
       title="Contas da Carteira"
@@ -84,22 +30,136 @@
       (close)="closeContasTable()"
     ></app-paginated-table>
 
+    <!-- 2) LISTA COM OS DADOS DE TODOS OS CONTRATOS ATIVOS COM PRODUTO PIX 
+     (é em um CONTRATO que relacionamos um conta com um produto) -->
     <app-paginated-table 
       *ngIf="showContratosPIXTable()"
       title="Contratos PIX"
-      [rows]="contratosPIX()"
+      [rows]="resumoPIX?.contratosVigentes?.content || []"
       [columns]="contratoColumns"
       [pageSize]="10"
       (close)="closeContratosPIXTable()"
     ></app-paginated-table>
 
+    <!-- 3) LISTA COM OS DADOS DE TODAS AS CONTAS (CORRENTE) QUE AINDA NÃO 'CONTRATARAM' O PRODUTO PIX -->
+    <app-paginated-table 
+      *ngIf="showGapsPIXTable()"
+      title="GAP do Produto PIX"
+      [rows]="resumoPIX?.contasGapDoProduto?.content || []"
+      [columns]="contasColumns"
+      [pageSize]="10"
+      (close)="closeGapsPIXTable()"
+    ></app-paginated-table>
+
+    <!-- 4) LISTA COM OS DADOS DE TODOS OS CONTRATOS ATIVOS COM PRODUTO CARTÃO DE CRÉDITO 
+     (é em um CONTRATO que relacionamos um conta com um produto) -->
     <app-paginated-table 
       *ngIf="showContratosCREDITOTable()"
       title="Contratos CARTÃO CRÉDITO"
-      [rows]="contratosCREDITO()"
+      [rows]="resumoCARTAOCREDITO?.contratosVigentes?.content || []"
       [columns]="contratoColumns"
       [pageSize]="10"
       (close)="closeContratosCREDITOTable()"
     ></app-paginated-table>
+
+    <!-- 5) LISTA COM OS DADOS DE TODAS AS CONTAS (CORRENTE) QUE AINDA NÃO 'CONTRATARAM' O PRODUTO CARTÃO DE CRÉDITO -->
+    <app-paginated-table 
+      *ngIf="showGapsCREDITOTable()"
+      title="GAP do Produto CARTÃO CRÉDITO"
+      [rows]="resumoCARTAOCREDITO?.contasGapDoProduto?.content || []"
+      [columns]="contasColumns"
+      [pageSize]="10"
+      (close)="closeGapsCREDITOTable()"
+    ></app-paginated-table>
+
+    <!-- TODO: para incluir os dados da relação (contratados/GAP) de qualquer outro produto bastará seguir o mesmo padrão -->
+    
+    <!-- CARDS KPIs -->
+    <div class="cards" *ngIf="!isShowingOneTable()">
+      <!-- 1) APRESENTA O DADO TOTAL DE CONTAS - COM OPÇÃO DE BOTÃO PARA VER A LISTAGEM COMPLETA (TABELA *1*) -->
+       <!-- TODO: USAR O PARÂMETRO description="...." PARA UM TEXTO SOBRE MÉTTRICA DE META ATINGIDA -->
+      <app-info-card 
+        title="Total de Contas na Carteira" 
+        [value]="totalContasDoGerente()" 
+        iconClass="icon-users"
+        actionTooltip="Ver listagem"
+        [isPositive]="true"
+        (action)="onTotalContasTableOpen()">
+      </app-info-card>
+
+      <!-- 2) APRESENTA RELAÇÃO "CONTRATADOS vs. GAP" DO PRODUTO PIX (COM CHAMADA PARA AMBAS LISTAS - TABELAS *2* E *3*) -->
+      <app-graph-card 
+        title="Gap do Produto: CARTÃO CRÉDITO"
+        type="pie"
+        dataType="percent"
+        [values]="[percentualClientesCARTAOCREDITO(), 100 - percentualClientesCARTAOCREDITO()]"
+        [labels]="['Contratos Ativos','GAP do Produto']"
+        [actionChartAreas]="[openContratosCREDITOTable, openGapsCREDITOTable]">
+      </app-graph-card>
+
+      <!-- 3) APRESENTA RELAÇÃO "CONTRATADOS vs. GAP" DO PRODUTO CARTÃO DE CRÉDITO (COM CHAMADA PARA AMBAS LISTAS - TABELAS *4* E *5*) -->
+      <app-graph-card 
+        title="Gap do Produto: PIX"
+        type="pie"
+        dataType="percent"
+        [values]="[percentualClientesPIX(), 100 - percentualClientesPIX()]"
+        [labels]="['Contratos Ativos','GAP do Produto']"
+        [actionChartAreas]="[openContratosPIXTable, openGapsPIXTable]">
+      </app-graph-card>
+
+      <!-- TODO: para outros produtos a mostrar a relação "CONTRATADOS vs. GAP" DO PRODUTO (COM 
+       CHAMADA PARA AMBAS LISTAS - TABELAS) bastará seguir a mesma lógica -->
+
+
+      <!-- TODO: --------------------- outros CARDS pertinentes... -->
+      <!-- <app-info-card 
+        title="Gap de Produtos: CARTÃO CRÉDITO" 
+         [value]="percentualClientesCARTAOCREDITO() + '%'" 
+        [trend]="resumoCARTAOCREDITO?.contratosVigentes?.totalElements || 0" 
+        description="Clientes com CREDITO"
+        actionTooltip="Ver listagem"
+        iconClass="icon-card"
+        [isPositive]="true"
+        (action)="openContratosCREDITOTable()">
+      </app-info-card> -->
+
+      <!-- <app-graph-card 
+        title="Distribuição de Produtos"
+        type="pie"
+        dataType="percent"
+        [values]="[10,40,50]"
+        [labels]="['PIX','CARTÃO CRÉDITO','OUTROS']"
+        [actionChartAreas]="[actionPIXArea, actionCREDITOArea, actionOUTROSArea]">
+      </app-graph-card> -->
+
+      <!-- <app-info-card 
+        title="Gap de Produtos: PIX" 
+        [value]="percentualClientesPIX() + '%'" 
+        [trend]="resumoPIX?.contratosVigentes?.totalElements || 0" 
+        description="Clientes com PIX"
+        actionTooltip="Ver listagem"
+        iconClass="icon-qrcode"
+        [isPositive]="percentualClientesPIX() > 0"
+        (action)="openContratosPIXTable()">
+      </app-info-card> -->
+
+      <!-- <app-info-card 
+        title="Tarefas Pendentes" 
+        value="23" 
+        trend="Vencendo hoje"
+        description=""
+        iconClass="icon-check"
+        [isPositive]="false"
+        (action)="onTasksCardAction()">
+      </app-info-card>
+     -->
+
+    </div>
+    <!-- TODO: Performance: Metas & Tarefas -->
+    <div class="panel performance" *ngIf="!isShowingOneTable()">
+      <h2>Performance: Tarefas & Metas</h2>
+      <p>Atingido vs Meta</p>
+    </div>
+    
   </section>
 </div>

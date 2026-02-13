@@ -24,8 +24,13 @@
       <div class="item" *ngFor="let lbl of labels; let i = index">
         <span class="dot" [style.background]="colors[i % colors.length]"></span>
         <span class="text">{{ lbl }}</span>
-        <span class="val" *ngIf="dataType === 'percent'">{{ percent(i) }}%</span>
-        <span class="val" *ngIf="dataType === 'absolute'">{{ values[i] }}</span>
+        <button type="button" class="val-btn" (click)="onLegendButtonClick(i)" [style.color]="colors[i % colors.length]">
+          <svg class="val-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6h14M4 12h14M4 18h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="val" *ngIf="dataType === 'percent'">{{ percent(i) }}%</span>
+          <span class="val" *ngIf="dataType === 'absolute'">{{ values[i] }}</span>
+        </button>
       </div>
     </div>
   </div>

@@ -29,8 +29,22 @@
   height: 12px;
   border-radius: 50%;
 }
-.legend .val {
+.legend .val-btn {
   margin-left: auto;
-  color: var(--green-700);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   font-weight: 600;
+}
+.legend .val-btn:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transform: translateY(-1px);
+}
+.legend .val-icon {
+  display: inline-block;
 }

@@ -64,5 +64,9 @@ export class GraphCardComponent {
     const fn = this.actionChartAreas?.[i];
     if (typeof fn === 'function') fn();
   }
+  onLegendButtonClick(i: number) {
+    const fn = this.actionChartAreas?.[i];
+    if (typeof fn === 'function') fn();
+  }
   trackItem = (index: number) => index;
 }

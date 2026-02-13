@@ -1,5 +1,6 @@
 import { ContaDtoResponse } from "./contas";
 import { ProdutoDtoResponse } from "./produtos";
+import { PageResponse } from '../shared/utils/pagination';
 
 export interface ContratoDtoResponse {
   id: number;
@@ -21,4 +22,11 @@ export interface ContratoDtoRequest {
   observacao: string;
   contaId: number;
   produtoId: number;
+}
+
+export interface ResumoPorProdutosDtoResponse {
+  produtoCodigo: string;
+  produtoDescricao: string;
+  contratosVigentes: PageResponse<ContratoDtoResponse>;
+  contasGapDoProduto: PageResponse<ContaDtoResponse>;
 }

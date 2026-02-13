@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ContratoDtoResponse } from '../models/contratos';
+import { ContratoDtoResponse, ResumoPorProdutosDtoResponse } from '../models/contratos';
 import { PageResponse } from '../shared/utils/pagination';
 
 @Injectable({
@@ -56,6 +56,7 @@ export class ContratosService {
         })
       );
   }
+
 //o valores de filtro pro backend podem ser null, mas vamos manter o gerenteId como OBRIGATÓRIO aqui neste caso
   getContratosGerente(
     sortBy: string | null,
@@ -70,6 +71,22 @@ export class ContratosService {
     gerenteId: number
   ): Observable<ContratoDtoResponse[]> {
     return this.http.get<ContratoDtoResponse[]>(`${this.BASE_URL}/contratos/filtrar?sortBy=${sortBy}&page=${page}&size=${size}&direction=${direction}&inicio=${inicio}&fim=${fim}&tipoPessoa=${tipoPessoa}&tipoContrato=${tipoConta}&produtoId=${produtoId}&gerenteId=${gerenteId}`);
+  }
+
+  //filtrando os dados mais utilizados de forma unificada
+  getResumoContratosPorGerenteId(gerenteId: number): Observable<ResumoPorProdutosDtoResponse[]> {
+    return this.http
+      .get<ResumoPorProdutosDtoResponse[]>(
+        `${this.BASE_URL}/contratos/resumo-por-produtos-contratados/${gerenteId}`,
+        { observe: 'response' }
+      )
+      .pipe(
+        tap((raw) => console.log('resumos raw HttpResponse', raw)),
+        map((raw) => {
+          console.log('resumos response body', raw.body);
+          return raw.body as ResumoPorProdutosDtoResponse[];
+        })
+      );
   }
 
 }
