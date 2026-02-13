@@ -9,6 +9,8 @@ import { ContaDtoResponse } from '../../models/contas';
 import { PageResponse } from '../../shared/utils/pagination';
 import { ContratosService } from '../../services/contratos.service';
 import { ResumoPorProdutosDtoResponse } from '../../models/contratos';
+import { TableColumn } from '../../shared/components/paginated-table/paginated-table.component';
+import { GerenteDtoResponse } from '../../models/gerentes';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +21,11 @@ import { ResumoPorProdutosDtoResponse } from '../../models/contratos';
 })
 
 export class DashboardComponent {
+  //GERENTE LOGADO
+  gerente: GerenteDtoResponse | null = null;
+  gerenteNome: string = "Nome";
+  gerenteAvatar: string = "AB";
+
   //GERAIS
   sidebarOpen = signal<boolean>(true);
   isShowingOneTable = signal<boolean>(false);
@@ -53,7 +60,7 @@ export class DashboardComponent {
   //TODO: para futuros produtos bastaria seguir a mesma lógica aqui (ver HTML para compreender melhor)
 
   // ----------------------- COLUNAS DE TABELAS - para o componente <app-paginated-table> -------------------------------------------
-  contasColumns = [
+  contasColumns: TableColumn[] = [
     { header: 'Titular', field: 'titular.pessoa.nome' },
     { header: 'PF/PJ', field: 'titular.pessoa.tipoPessoa', cellClass: (row: any) => {
       const tipo = row?.titular?.pessoa?.tipoPessoa;
@@ -69,7 +76,7 @@ export class DashboardComponent {
     // { header: 'Agência', field: 'agencia' },
     // { header: 'Gerente', field: 'gerente.pessoa.nome' }
   ];
-  contratoColumns = [
+  contratoColumns: TableColumn[] = [
     { header: 'Titular', field: 'conta.titular.pessoa.nome' },
     { header: 'PF/PJ', field: 'conta.titular.pessoa.tipoPessoa', cellClass: (row: any) => {
       const tipo = row?.conta?.titular?.pessoa?.tipoPessoa;
@@ -123,12 +130,25 @@ export class DashboardComponent {
 
   }
 
+  private setDadosGerenteLogado(gerenteLogado: GerenteDtoResponse) {
+    if (gerenteLogado) {
+          this.gerente = gerenteLogado;
+          this.gerenteNome = gerenteLogado?.pessoa?.nome ?? '';
+          const parts = (this.gerenteNome || '').trim().split(/\s+/);
+          const first = parts[0]?.[0] ?? '';
+          const last = parts[parts.length - 1]?.[0] ?? '';
+          this.gerenteAvatar = (first + last).toUpperCase();
+    }
+  }
+
   private setResumoValores(resumo: ResumoPorProdutosDtoResponse[]) {
     if (resumo?.length > 0) {
       resumo.forEach((item) => {
         //Produto PIX:
         if (item?.produtoDescricao === 'PIX') {
           this.resumoPIX = item;
+          //TODO - reposicionar o carregamento dos dados do gerente onde faça mais sentido
+          this.setDadosGerenteLogado(item?.contasGapDoProduto?.content?.[0]?.gerente ?? null);
         }
         //Produto Cartão de Crédito:
         if (item?.produtoDescricao === 'CARTAO DE CRÉDITO') {
@@ -237,9 +257,9 @@ export class DashboardComponent {
 
   //TODO: proximos cards e ações a serem implementadas...
   //  ----------- CARD TOTAL DE CONTRATOS - DÉBITO  -----------
-  // notifyClick() {
-  //   console.log('Notifications click');
-  // }
+  notifyClick() {
+    console.log('Notifications click');
+  }
 
   //  ----------- CARD TOTAL DE CONTRATOS - SEGURO DE VIDA  -----------
   // onTasksCardAction() {
