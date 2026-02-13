@@ -1,0 +1,48 @@
+:host, .tarefas-wrapper {
+  display: block;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1rem;
+  min-height: 100vh;
+}
+.layout.no-sidebar {
+  grid-template-columns: 1fr;
+}
+.content {
+  padding: 1rem 1.25rem;
+}
+.filters {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.filter label {
+  font-size: 0.85rem;
+  color: var(--brown-700);
+}
+.filter select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid rgba(31, 122, 58, 0.2);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--brown-700);
+}
+.clear-btn {
+  height: 32px;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(31, 122, 58, 0.2);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--green-700);
+}
+.clear-btn:hover {
+  background: rgba(31, 122, 58, 0.08);
+}

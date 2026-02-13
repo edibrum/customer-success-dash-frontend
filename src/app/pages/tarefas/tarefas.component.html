@@ -1,0 +1,39 @@
+<div class="layout" [class.no-sidebar]="!sidebarOpen()">
+  <app-sidebar *ngIf="sidebarOpen()" [gerenteNome]="gerenteNome" [gerenteAvatar]="gerenteAvatar"></app-sidebar>
+  <section class="content">
+    <div class="tarefas-wrapper">
+      <div class="filters">
+        <div class="filter">
+          <label for="statusSel">Status</label>
+          <select id="statusSel" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+            <option [ngValue]="null">Todos</option>
+            <option *ngFor="let s of statusOptions" [ngValue]="s">{{ s }}</option>
+          </select>
+        </div>
+        <div class="filter">
+          <label for="produtoSel">Produto</label>
+          <select id="produtoSel" [ngModel]="produtoFilter()" (ngModelChange)="produtoFilter.set($event)">
+            <option [ngValue]="null">Todos</option>
+            <option *ngFor="let p of produtoOptions()" [ngValue]="p">{{ p }}</option>
+          </select>
+        </div>
+        <div class="filter">
+          <label for="tipoSel">Tipo</label>
+          <select id="tipoSel" [ngModel]="tipoFilter()" (ngModelChange)="tipoFilter.set($event)">
+            <option [ngValue]="null">Todos</option>
+            <option *ngFor="let t of tipoOptions" [ngValue]="t">{{ t }}</option>
+          </select>
+        </div>
+        <button class="clear-btn" (click)="limparFiltros()">Limpar filtros</button>
+      </div>
+
+      <app-paginated-table
+        title="Tarefas"
+        subtitle="Listagem com filtros de Status, Produto e Tipo"
+        [rows]="filteredTarefas()"
+        [columns]="columns"
+        [pageSize]="pageSize">
+      </app-paginated-table>
+    </div>
+  </section>
+</div>
