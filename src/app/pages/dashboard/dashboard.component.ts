@@ -131,7 +131,7 @@ export class DashboardComponent {
           this.resumoPIX = item;
         }
         //Produto Cartão de Crédito:
-        if (item?.produtoDescricao === 'CARTÃO DE CRÉDITO') {
+        if (item?.produtoDescricao === 'CARTAO DE CRÉDITO') {
           this.resumoCARTAOCREDITO = item;
         }
         //TODO: Produtos Futuros:

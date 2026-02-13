@@ -9,6 +9,7 @@ export interface TableColumn {
   locale?: string;
   digitsInfo?: string;
   value?: (row: any) => any;
+  cellClass?: (row: any) => string;
 }
 
 @Component({
@@ -20,6 +21,7 @@ export interface TableColumn {
 })
 export class PaginatedTableComponent implements OnChanges, OnInit {
   @Input() title: string = '';
+  @Input() subtitle: string = '';
   @Input() rows: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() pageSize: number = 10;

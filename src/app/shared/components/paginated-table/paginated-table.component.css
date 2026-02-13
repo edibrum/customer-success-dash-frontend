@@ -10,12 +10,21 @@
 }
 .contas-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+}
+.contas-head .head-titles {
+  display: flex;
+  flex-direction: column;
 }
 .contas-head h2 {
   margin: 0 0 0.75rem;
   color: var(--brown-700);
+}
+.contas-head .subtitle {
+  font-size: 0.9rem;
+  color: var(--brown-500);
+  margin: -0.25rem 0 0.5rem;
 }
 .close-btn {
   display: inline-flex;

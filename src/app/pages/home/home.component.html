@@ -1,7 +1,19 @@
 <section class="home-wrap">
-  <div class="home-card">
+  <div class="home-card" *ngIf="!loading; else loadingTpl">
     <h1 class="home-title">Bem-vindo ao SuDash</h1>
     <p class="home-sub">Seu novo painel de sucesso!</p>
     <button class="home-btn" (click)="startClick()">Começar</button>
+  </div>
+  <ng-template #loadingTpl>
+    <div class="loading-wrap">
+      <div class="gear"></div>
+      <div class="loading-text">Preparando o Dashboard...</div>
+    </div>
+  </ng-template>
+  <div class="toast" *ngIf="toastVisible">
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3a9 9 0 109 9 9.01 9.01 0 00-9-9zm0 7v6m0-9h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="toast-text">{{ toastMessage }}</span>
   </div>
 </section>

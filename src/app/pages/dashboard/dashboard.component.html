@@ -34,7 +34,7 @@
      (é em um CONTRATO que relacionamos um conta com um produto) -->
     <app-paginated-table 
       *ngIf="showContratosPIXTable()"
-      title="Contratos PIX"
+      title="Contratos Ativos com Produto PIX"
       [rows]="resumoPIX?.contratosVigentes?.content || []"
       [columns]="contratoColumns"
       [pageSize]="10"
@@ -45,6 +45,7 @@
     <app-paginated-table 
       *ngIf="showGapsPIXTable()"
       title="GAP do Produto PIX"
+      subtitle="(clientes AINDA sem este produto)"
       [rows]="resumoPIX?.contasGapDoProduto?.content || []"
       [columns]="contasColumns"
       [pageSize]="10"
@@ -55,7 +56,7 @@
      (é em um CONTRATO que relacionamos um conta com um produto) -->
     <app-paginated-table 
       *ngIf="showContratosCREDITOTable()"
-      title="Contratos CARTÃO CRÉDITO"
+      title="Contratos Ativos com ProdutoCARTÃO CRÉDITO"
       [rows]="resumoCARTAOCREDITO?.contratosVigentes?.content || []"
       [columns]="contratoColumns"
       [pageSize]="10"
@@ -66,6 +67,7 @@
     <app-paginated-table 
       *ngIf="showGapsCREDITOTable()"
       title="GAP do Produto CARTÃO CRÉDITO"
+      subtitle="(clientes AINDA sem este produto)"
       [rows]="resumoCARTAOCREDITO?.contasGapDoProduto?.content || []"
       [columns]="contasColumns"
       [pageSize]="10"
