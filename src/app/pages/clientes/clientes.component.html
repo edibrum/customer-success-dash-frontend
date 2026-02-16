@@ -1,0 +1,12 @@
+<div class="layout" [class.no-sidebar]="!sidebarOpen()">
+  <app-sidebar *ngIf="sidebarOpen()" [gerenteNome]="gerenteStore.nome()" [gerenteAvatar]="gerenteStore.avatar()"></app-sidebar>
+  <section class="content">
+    <app-paginated-table
+      title="Clientes da Carteira"
+      subtitle="Clientes associados ao gerente"
+      [rows]="contas()"
+      [columns]="contasColumns"
+      [pageSize]="pageSize">
+    </app-paginated-table>
+  </section>
+</div>

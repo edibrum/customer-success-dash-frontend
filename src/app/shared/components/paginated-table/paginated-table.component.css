@@ -86,3 +86,35 @@
   background:  var(--brown-100);
   border-radius: 0;
 }
+
+/* Tarefas STATUS */
+.cell-criada {
+  color: var(--green-700);
+  background: var(--green-100);
+  border-radius: 0;
+}
+.cell-em-andamento {
+  color: var(--orange-700);
+  background: var(--orange-100);
+  border-radius: 0;
+}
+.cell-realizada {
+  color: var(--blue-700);
+  background: var(--blue-100);
+  border-radius: 0;
+}
+.cell-postergada {
+  color: var(--yellow-700);
+  background: var(--yellow-100);
+  border-radius: 0;
+}
+.cell-cancelada {
+  color: var(--red-700);
+  background: var(--red-100);
+  border-radius: 0;
+}
+.cell-vencida {
+  color: var(--brown-700);
+  background: var(--brown-100);
+  border-radius: 0;
+}

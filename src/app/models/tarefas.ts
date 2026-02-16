@@ -30,6 +30,6 @@ export interface TarefaDtoRequest {
   produtoId?: number;
 }
 
-export type EnumStatusTarefa = 'CRIADA' | 'EM_ANDAMENTO' | 'REALIZADA,' | 'OSTERGADA' | 'CANCELADA';
+export type EnumStatusTarefa = 'CRIADA' | 'EM_ANDAMENTO' | 'REALIZADA' | 'POSTERGADA' | 'CANCELADA';
 
 export type EnumTipoTarefa = 'VISITA_LOCAL' | 'CONTATO_TELEFONICO' | 'COBRANCA' | 'OUTRO';

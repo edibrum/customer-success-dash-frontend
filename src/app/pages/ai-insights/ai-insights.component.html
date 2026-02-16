@@ -1,0 +1,50 @@
+<div class="layout" [class.no-sidebar]="!sidebarOpen()">
+  <app-sidebar *ngIf="sidebarOpen()" [gerenteNome]="gerenteStore.nome()" [gerenteAvatar]="gerenteStore.avatar()"></app-sidebar>
+  <section class="content">
+    <header class="topbar">
+      <h1>AI Insights</h1>
+    </header>
+
+    <div class="cards">
+      <app-info-card
+        title="Potencial de Upsell"
+        [value]="37"
+        description="Clientes com alta afinidade"
+        iconClass="icon-trending"
+        trend="↑"
+        [isPositive]="true"
+        actionTooltip="Ver oportunidades"
+        (action)="onCardAction('upsell')"
+      ></app-info-card>
+
+      <app-info-card
+        title="Satisfação (NPS)"
+        [value]="72"
+        description="Último ciclo"
+        iconClass="icon-star"
+        trend="→"
+        [isPositive]="true"
+        actionTooltip="Ver séries"
+        (action)="onCardAction('nps')"
+      ></app-info-card>
+    </div>
+
+    <div class="chatbox">
+      <div class="chat-messages">
+        <div *ngFor="let m of chatMessages(); let i = index" class="msg" [class.user]="m.role === 'user'" [class.ai]="m.role === 'ai'">
+          <div class="bubble">{{ m.text }}</div>
+        </div>
+      </div>
+      <form class="chat-input" (ngSubmit)="sendMessage()">
+        <input
+          type="text"
+          name="chat"
+          placeholder="Digite sua pergunta..."
+          [ngModel]="chatInput()"
+          (ngModelChange)="chatInput.set($event)"
+        />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  </section>
+</div>

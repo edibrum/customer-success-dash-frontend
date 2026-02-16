@@ -12,4 +12,10 @@ import { RouterLink } from '@angular/router';
 export class SidebarComponent {
   @Input() gerenteNome: string = '';
   @Input() gerenteAvatar: string = '';
+  @Input() activePage: string = '';
+
+
+  isActive(page: string): boolean {
+    return this.activePage === page;
+  }
 }

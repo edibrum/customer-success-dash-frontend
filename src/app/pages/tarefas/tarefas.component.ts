@@ -6,6 +6,8 @@ import { EnumStatusTarefa, EnumTipoTarefa, TarefaDtoResponse } from '../../model
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { TarefasService } from '../../services/tarefas.service';
 import { PageResponse } from '../../shared/utils/pagination';
+import { MetaDtoResponse } from '../../models/metas';
+import { GerenteStore } from '../../services/gerente-store.service';
 
 @Component({
   selector: 'app-tarefas',
@@ -16,8 +18,41 @@ import { PageResponse } from '../../shared/utils/pagination';
 })
 export class TarefasComponent {
   sidebarOpen = signal<boolean>(true);
+  constructor(
+    private tarefasService: TarefasService,
+    public gerenteStore: GerenteStore
+  ) {
+    this.tarefasService.buscarMetasPorGerenteId(1).subscribe({
+      next: (page: PageResponse<MetaDtoResponse>) => this.metas.set(page?.content ?? []),
+      error: () => this.metas.set([])
+    });
+    this.tarefasService.buscarTarefasPorGerenteId().subscribe({
+      next: (page: PageResponse<TarefaDtoResponse>) => this.tarefas.set(page?.content ?? []),
+      error: () => this.tarefas.set([])
+    });
+
+    this.tarefasService.buscarTarefasComFiltros(
+        1,//gerenteId: number,
+        null,//metaId: number | null,
+        null,//statusTarefa: string | null,
+        null,//tipoTarefa: string | null,
+        null,//inicio: string | null,
+        null,//fim: string | null,
+        //pagination
+        null,//sortBy: string | null,
+        null,//page: number | null,
+        null,//size: number | null,
+        null,//direction: string | null,
+      ).subscribe({
+        next: (page: PageResponse<TarefaDtoResponse>) => {
+          this.tarefas.set(page?.content ?? []);
+        },
+        error: () => this.tarefas.set([])
+    });
+  }
   // Dados
-  tarefas: TarefaDtoResponse[] = [];
+  tarefas = signal<TarefaDtoResponse[]>([]);
+  metas = signal<MetaDtoResponse[]>([]);
 
   // Filtros
   filtroMetaId = signal<number | null>(null);  //metaId: number | null,
@@ -32,21 +67,38 @@ export class TarefasComponent {
   filtroDirection = signal<string | null>(null);  //direction: string | null,
 
   // Opções dos filtros
-  statusOptions: EnumStatusTarefa[] = ['CRIADA', 'EM_ANDAMENTO', 'REALIZADA,', 'OSTERGADA', 'CANCELADA'];
+  statusOptions: EnumStatusTarefa[] = ['CRIADA', 'EM_ANDAMENTO', 'REALIZADA', 'POSTERGADA', 'CANCELADA'];
   tipoOptions: EnumTipoTarefa[] = ['VISITA_LOCAL', 'CONTATO_TELEFONICO', 'COBRANCA', 'OUTRO'];
+  metaOptions = computed<{ id: number; descricao: string }[]>(() => {
+    const map = new Map<number, string>();
+    (this.metas() || []).forEach(m => {
+      if (typeof m.id === 'number') {
+        map.set(m.id, m.descricao ?? String(m.id));
+      }
+    });
+    return Array.from(map.entries()).map(([id, descricao]) => ({ id, descricao }));
+  });
 
   // Tabela
   columns: TableColumn[] = [
     { header: 'ID', field: 'id', format: 'number' },
-    { header: 'Status', field: 'status' },
+    { header: 'Status', field: 'status', cellClass: (row: any) => {
+      const statusTarefa = row?.status;
+      return statusTarefa === 'CRIADA' ? 'cell-criada' :
+             statusTarefa === 'EM_ANDAMENTO' ? 'cell-em-andamento' :
+             statusTarefa === 'REALIZADA' ? 'cell-realizada' :
+             statusTarefa === 'POSTERGADA' ? 'cell-postergada' :
+             statusTarefa === 'CANCELADA' ? 'cell-cancelada' :
+             'cell-vencida';
+    } },
     { header: 'Tipo', field: 'tipo' },
     { header: 'Descrição', field: 'descricao' },
-    { header: 'Produto', field: 'produtoId' },
-    { header: 'Cliente', field: 'clienteId' },
-    { header: 'Contrato', field: 'contratoId' },
-    { header: 'Gerente', field: 'gerente.id' },
-    { header: 'Criada em', field: 'dataCriacao', format: 'date', digitsInfo: 'short', locale: 'pt-BR' },
-    { header: 'Atualizada em', field: 'dataAtualizacao', format: 'date', digitsInfo: 'short', locale: 'pt-BR' }
+    //{ header: 'Produto', field: 'produtoId' },
+    //{ header: 'Cliente', field: 'clienteId' },
+    //{ header: 'Contrato', field: 'contratoId' },
+    //{ header: 'Gerente', field: 'gerente.id' },
+    //{ header: 'Criada em', field: 'dataCriacao', format: 'date', digitsInfo: 'short', locale: 'pt-BR' },
+    //{ header: 'Atualizada em', field: 'dataAtualizacao', format: 'date', digitsInfo: 'short', locale: 'pt-BR' }
   ];
   pageSize = 10;
 
@@ -55,10 +107,10 @@ export class TarefasComponent {
     const status = this.filtroStatusTarefa();
     const metaId = this.filtroMetaId();
     const tipo = this.filtroTipoTarefa();
-    return (this.tarefas || []).filter(t => {
-      const byStatus = status ? t.status === status : true;
-      const byMetaId = metaId !== null ? t.metaId === metaId : true;
-      const byTipo = tipo ? t.tipo === tipo : true;
+    return (this.tarefas() || []).filter(t => {
+      const byStatus = status != null ? t.status === status : true;
+      const byMetaId = metaId != null ? t.metaId === metaId : true;
+      const byTipo = tipo != null ? t.tipo === tipo : true;
       return byStatus && byMetaId && byTipo;
     });
   });
@@ -76,39 +128,4 @@ export class TarefasComponent {
     this.filtroDirection.set(null);
   }
 
-  //  ----------- LISTAGENS UTILIZADAS PARA O DASHBOARD DE MANEIRA GERAL ----------- 
-    constructor(
-      private tarefasService: TarefasService 
-      //private metasService: MetasService - TODO
-    ) {
-  
-      this.tarefasService.buscarTarefasPorGerenteId().subscribe({
-        next: (page: PageResponse<TarefaDtoResponse>) => {
-          console.log('totalElements', page?.totalElements);
-          console.log('contas-length', this.tarefas.length); 
-        },
-        error: () => this.tarefas = []
-      });
-  
-      this.tarefasService.buscarTarefasComFiltros(
-        1,//gerenteId: number,
-        null,//metaId: number | null,
-        null,//statusTarefa: string | null,
-        null,//tipoTarefa: string | null,
-        null,//inicio: string | null,
-        null,//fim: string | null,
-        //pagination
-        null,//sortBy: string | null,
-        null,//page: number | null,
-        null,//size: number | null,
-        null,//direction: string | null,
-      ).subscribe({
-        next: (page: PageResponse<TarefaDtoResponse>) => {
-          console.log('totalElements', page?.totalElements);
-          console.log('contas-length', this.tarefas.length); 
-        },
-        error: () => this.tarefas = []
-      });
-  
-    }
 }

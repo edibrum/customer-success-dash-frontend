@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TarefaDtoRequest, TarefaDtoResponse } from '../models/tarefas';
@@ -48,11 +48,19 @@ buscarTarefasComFiltros(
     size: number | null,
     direction: string | null
 ): Observable<PageResponse<TarefaDtoResponse>> {
+      let params = new HttpParams().set('gerenteId', String(gerenteId));
+      if (sortBy != null) params = params.set('sortBy', String(sortBy));
+      if (page != null) params = params.set('page', String(page));
+      if (size != null) params = params.set('size', String(size));
+      if (direction != null) params = params.set('direction', String(direction));
+      if (inicio != null) params = params.set('inicio', String(inicio));
+      if (fim != null) params = params.set('fim', String(fim));
+      if (metaId != null) params = params.set('metaId', String(metaId));
+      if (statusTarefa != null) params = params.set('statusTarefa', String(statusTarefa));
+      if (tipoTarefa != null) params = params.set('tipoTarefa', String(tipoTarefa));
+
       return this.http
-        .get<PageResponse<TarefaDtoResponse>>(
-          `${this.BASE_URL}/tarefas/filtrar??sortBy=${sortBy}&page=${page}&size=${size}&direction=${direction}&inicio=${inicio}&fim=${fim}&metaId=${metaId}&statusTarefa=${statusTarefa}&tipoTarefa=${tipoTarefa}&gerenteId=${gerenteId}`,
-          { observe: 'response' }
-        )
+        .get<PageResponse<TarefaDtoResponse>>(`${this.BASE_URL}/tarefas/filtrar`, { params, observe: 'response' })
         .pipe(
           tap((raw) => console.log('tarefas raw HttpResponse', raw)),
           map((raw) => {
@@ -72,8 +80,8 @@ editarTarefa(dto: TarefaDtoRequest): Observable<TarefaDtoResponse> {
 
 //TODO: criar serviço para metas
 //META - somente BUSCAR PARA O GERENTE
-buscarMeta(gerenteId: number): Observable<MetaDtoResponse> {
-    return this.http.get<MetaDtoResponse>(`${this.BASE_URL}/metas/${gerenteId}`);
+buscarMetasPorGerenteId(gerenteId: number): Observable<PageResponse<MetaDtoResponse>> {
+    return this.http.get<PageResponse<MetaDtoResponse>>(`${this.BASE_URL}/metas/filtrar?gerenteId=${gerenteId}`);
 }
 
 }

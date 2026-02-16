@@ -11,6 +11,7 @@ import { ContratosService } from '../../services/contratos.service';
 import { ResumoPorProdutosDtoResponse } from '../../models/contratos';
 import { TableColumn } from '../../shared/components/paginated-table/paginated-table.component';
 import { GerenteDtoResponse } from '../../models/gerentes';
+import { GerenteStore } from '../../services/gerente-store.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -96,7 +97,7 @@ export class DashboardComponent {
 
 
   //  ----------- LISTAGENS UTILIZADAS PARA O DASHBOARD DE MANEIRA GERAL ----------- 
-  constructor(private contasService: ContasService, private contratosService: ContratosService) {
+  constructor(private contasService: ContasService, private contratosService: ContratosService, private gerenteStore: GerenteStore) {
 
     this.contasService.getContasPorGerenteId(1).subscribe({
       next: (page: PageResponse<ContaDtoResponse>) => {
@@ -138,6 +139,7 @@ export class DashboardComponent {
           const first = parts[0]?.[0] ?? '';
           const last = parts[parts.length - 1]?.[0] ?? '';
           this.gerenteAvatar = (first + last).toUpperCase();
+          this.gerenteStore.setFromGerente(gerenteLogado);
     }
   }
 

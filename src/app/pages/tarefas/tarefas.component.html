@@ -1,25 +1,25 @@
 <div class="layout" [class.no-sidebar]="!sidebarOpen()">
-  <app-sidebar *ngIf="sidebarOpen()" [gerenteNome]="gerenteNome" [gerenteAvatar]="gerenteAvatar"></app-sidebar>
+  <app-sidebar *ngIf="sidebarOpen()" [gerenteNome]="gerenteStore.nome()" [gerenteAvatar]="gerenteStore.avatar()" [activePage]="'tarefas'"></app-sidebar>
   <section class="content">
     <div class="tarefas-wrapper">
       <div class="filters">
         <div class="filter">
           <label for="statusSel">Status</label>
-          <select id="statusSel" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+          <select id="statusSel" [ngModel]="filtroStatusTarefa()" (ngModelChange)="filtroStatusTarefa.set($event)">
             <option [ngValue]="null">Todos</option>
             <option *ngFor="let s of statusOptions" [ngValue]="s">{{ s }}</option>
           </select>
         </div>
         <div class="filter">
-          <label for="produtoSel">Produto</label>
-          <select id="produtoSel" [ngModel]="produtoFilter()" (ngModelChange)="produtoFilter.set($event)">
+          <label for="metaSel">Meta</label>
+          <select id="metaSel" [ngModel]="filtroMetaId()" (ngModelChange)="filtroMetaId.set($event)">
             <option [ngValue]="null">Todos</option>
-            <option *ngFor="let p of produtoOptions()" [ngValue]="p">{{ p }}</option>
+            <option *ngFor="let m of metaOptions()" [ngValue]="m.id">{{ m.descricao }}</option>
           </select>
         </div>
         <div class="filter">
           <label for="tipoSel">Tipo</label>
-          <select id="tipoSel" [ngModel]="tipoFilter()" (ngModelChange)="tipoFilter.set($event)">
+          <select id="tipoSel" [ngModel]="filtroTipoTarefa()" (ngModelChange)="filtroTipoTarefa.set($event)">
             <option [ngValue]="null">Todos</option>
             <option *ngFor="let t of tipoOptions" [ngValue]="t">{{ t }}</option>
           </select>

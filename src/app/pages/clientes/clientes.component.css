@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1rem;
+  min-height: 100vh;
+}
+.layout.no-sidebar {
+  grid-template-columns: 1fr;
+}
+.content {
+  padding: 1rem 1.25rem;
+}
+

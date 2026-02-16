@@ -9,6 +9,7 @@ export interface MetaDtoResponse {
   status: EnumStatusMeta;
   gerente: GerenteDtoResponse;
   produto: ProdutoDtoResponse;
+  descricao: string;
   observacao: string;
 }
 
@@ -20,6 +21,7 @@ export interface MetaDtoRequest {
   status: EnumStatusMeta;
   gerenteId: number;
   produtoId: number;
+  descricao: string;
   observacao: string;
 }
 

@@ -1,5 +1,5 @@
 <div class="layout" [class.no-sidebar]="!sidebarOpen()">
-  <app-sidebar *ngIf="sidebarOpen()" [gerenteNome]="gerenteNome" [gerenteAvatar]="gerenteAvatar"></app-sidebar>
+  <app-sidebar *ngIf="sidebarOpen()" [gerenteNome]="gerenteNome" [gerenteAvatar]="gerenteAvatar" [activePage]="'dashboard'"></app-sidebar>
   <section class="content">
     <header class="topbar">
       <button class="menu" (click)="toggleSidebar()">
