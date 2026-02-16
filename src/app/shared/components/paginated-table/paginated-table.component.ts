@@ -22,12 +22,15 @@ export interface TableColumn {
 export class PaginatedTableComponent implements OnChanges, OnInit {
   @Input() title: string = '';
   @Input() subtitle: string = '';
+  @Input() btnAddNew?: () => void;
+  @Output() createNew = new EventEmitter<void>();
+  @Input() btnClose?: boolean = true;
+  @Output() close = new EventEmitter<void>();
   @Input() rows: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() pageSize: number = 10;
   @Input() externalPage?: number;
   @Input() externalTotalPages?: number;
-  @Output() close = new EventEmitter<void>();
   @Output() pageChange = new EventEmitter<number>();
 
   page = signal<number>(0);
@@ -57,6 +60,12 @@ export class PaginatedTableComponent implements OnChanges, OnInit {
     this.page.set(0);
     this.close.emit();
   }
+
+  onAddNew() {
+    console.log(`this.createNew....`,);
+    this.createNew.emit();
+  }
+
   nextPageListaContasTotal() {
     const p = this.effectivePage();
     const tp = this.effectiveTotalPages();

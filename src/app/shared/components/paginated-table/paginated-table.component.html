@@ -1,16 +1,21 @@
-<div class="panel contas-table">
-  <div class="contas-head">
+<div class="panel main-table">
+  <div class="table-head">
     <div class="head-titles">
       <h2>{{ title }}</h2>
-      <div class="subtitle">
-        {{ subtitle }}
+      <div class="subtitle-row">
+        <div class="subtitle">
+          {{ subtitle }}
+        </div>
       </div>
     </div>
-    <button class="close-btn" (click)="closeClick()" aria-label="Fechar">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </button>
+    <div class="head-btn-actions">
+      <button class="close-btn" (click)="closeClick()" aria-label="Fechar" *ngIf="btnClose">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button *ngIf="btnAddNew != null" class="new-btn" (click)="onAddNew()">NOVO</button>
+    </div>
   </div>
 
   <table class="table">

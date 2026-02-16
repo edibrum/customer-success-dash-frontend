@@ -2,6 +2,7 @@
   <app-sidebar *ngIf="sidebarOpen()" [gerenteNome]="gerenteStore.nome()" [gerenteAvatar]="gerenteStore.avatar()"></app-sidebar>
   <section class="content">
     <app-paginated-table
+      [btnClose]="false"
       title="Clientes da Carteira"
       subtitle="Clientes associados ao gerente"
       [rows]="contas()"

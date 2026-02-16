@@ -2,7 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PaginatedTableComponent, TableColumn } from '../../shared/components/paginated-table/paginated-table.component';
-import { EnumStatusTarefa, EnumTipoTarefa, TarefaDtoResponse } from '../../models/tarefas';
+import { EnumStatusTarefa, EnumTipoTarefa, TarefaDtoRequest, TarefaDtoResponse } from '../../models/tarefas';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { TarefasService } from '../../services/tarefas.service';
 import { PageResponse } from '../../shared/utils/pagination';
@@ -32,17 +32,17 @@ export class TarefasComponent {
     });
 
     this.tarefasService.buscarTarefasComFiltros(
-        1,//gerenteId: number,
-        null,//metaId: number | null,
-        null,//statusTarefa: string | null,
-        null,//tipoTarefa: string | null,
-        null,//inicio: string | null,
-        null,//fim: string | null,
-        //pagination
-        null,//sortBy: string | null,
-        null,//page: number | null,
-        null,//size: number | null,
-        null,//direction: string | null,
+        1,
+        this.filtroMetaId(),
+        this.filtroStatusTarefa(),
+        this.filtroTipoTarefa(),
+        this.filtroInicio(),
+        this.filtroFim(),
+        // pagination
+        this.filtroSortBy(),
+        this.filtroPage(),
+        this.filtroSize(),
+        this.filtroDirection()
       ).subscribe({
         next: (page: PageResponse<TarefaDtoResponse>) => {
           this.tarefas.set(page?.content ?? []);
@@ -53,6 +53,15 @@ export class TarefasComponent {
   // Dados
   tarefas = signal<TarefaDtoResponse[]>([]);
   metas = signal<MetaDtoResponse[]>([]);
+  showNovoForm = signal<boolean>(false);
+  novoTarefa = signal<TarefaDtoRequest>({
+    ativo: true,
+    status: 'CRIADA',
+    tipo: 'OUTRO',
+    descricao: '',
+    observacao: '',
+    gerenteId: 1
+  });
 
   // Filtros
   filtroMetaId = signal<number | null>(null);  //metaId: number | null,
@@ -128,4 +137,59 @@ export class TarefasComponent {
     this.filtroDirection.set(null);
   }
 
+  abrirNovoForm() {
+    this.showNovoForm.set(true);
+  }
+
+  cancelarNovo() {
+    this.resetNovoTarefa();
+    this.showNovoForm.set(false);
+  }
+
+  setNovoAtivo(value: boolean) {
+    const current = this.novoTarefa();
+    this.novoTarefa.set({ ...current, ativo: value });
+  }
+  setNovoStatus(value: EnumStatusTarefa) {
+    const current = this.novoTarefa();
+    this.novoTarefa.set({ ...current, status: value });
+  }
+  setNovoTipo(value: EnumTipoTarefa) {
+    const current = this.novoTarefa();
+    this.novoTarefa.set({ ...current, tipo: value });
+  }
+  setNovoMeta(value: number | undefined | null) {
+    const current = this.novoTarefa();
+    this.novoTarefa.set({ ...current, metaId: value ?? undefined });
+  }
+  setNovoDescricao(value: string) {
+    const current = this.novoTarefa();
+    this.novoTarefa.set({ ...current, descricao: value });
+  }
+  setNovoObservacao(value: string) {
+    const current = this.novoTarefa();
+    this.novoTarefa.set({ ...current, observacao: value });
+  }
+
+  private resetNovoTarefa() {
+    this.novoTarefa.set({
+      ativo: true,
+      status: 'CRIADA',
+      tipo: 'OUTRO',
+      descricao: '',
+      observacao: '',
+      gerenteId: 1
+    });
+  }
+
+  salvar() {
+    const dto = this.novoTarefa();
+    this.tarefasService.criarTarefa(dto).subscribe({
+      next: (created: TarefaDtoResponse) => {
+        this.tarefas.set([created, ...this.tarefas()]);
+        this.cancelarNovo();
+      },
+      error: () => {}
+    });
+  }
 }

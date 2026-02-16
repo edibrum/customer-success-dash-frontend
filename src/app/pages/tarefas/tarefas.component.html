@@ -2,7 +2,7 @@
   <app-sidebar *ngIf="sidebarOpen()" [gerenteNome]="gerenteStore.nome()" [gerenteAvatar]="gerenteStore.avatar()" [activePage]="'tarefas'"></app-sidebar>
   <section class="content">
     <div class="tarefas-wrapper">
-      <div class="filters">
+      <div class="filters" *ngIf="!showNovoForm()">
         <div class="filter">
           <label for="statusSel">Status</label>
           <select id="statusSel" [ngModel]="filtroStatusTarefa()" (ngModelChange)="filtroStatusTarefa.set($event)">
@@ -27,9 +27,56 @@
         <button class="clear-btn" (click)="limparFiltros()">Limpar filtros</button>
       </div>
 
+      <div class="novo-form" *ngIf="showNovoForm()">
+        <div class="form-row">
+          <label>
+            Ativo
+            <input type="checkbox" [ngModel]="novoTarefa().ativo" (ngModelChange)="setNovoAtivo($event)"/>
+          </label>
+          <label>
+            Status
+            <select [ngModel]="novoTarefa().status" (ngModelChange)="setNovoStatus($event)">
+              <option *ngFor="let s of statusOptions" [ngValue]="s">{{ s }}</option>
+            </select>
+          </label>
+          <label>
+            Tipo
+            <select [ngModel]="novoTarefa().tipo" (ngModelChange)="setNovoTipo($event)">
+              <option *ngFor="let t of tipoOptions" [ngValue]="t">{{ t }}</option>
+            </select>
+          </label>
+          <label>
+            Meta
+            <select [ngModel]="novoTarefa().metaId" (ngModelChange)="setNovoMeta($event)">
+              <option [ngValue]="undefined">Sem meta</option>
+              <option *ngFor="let m of metaOptions()" [ngValue]="m.id">{{ m.descricao }}</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="full">
+            Descrição
+            <input type="text" placeholder="Descreva a tarefa" [ngModel]="novoTarefa().descricao" (ngModelChange)="setNovoDescricao($event)"/>
+          </label>
+        </div>
+        <div class="form-row">
+          <label class="full">
+            Observação
+            <textarea rows="3" placeholder="Observações (opcional)" [ngModel]="novoTarefa().observacao" (ngModelChange)="setNovoObservacao($event)"></textarea>
+          </label>
+        </div>
+        <div class="actions">
+          <button class="save-btn" (click)="salvar()">Salvar</button>
+          <button class="clear-btn" (click)="cancelarNovo()">Cancelar</button>
+        </div>
+      </div>
+
       <app-paginated-table
+        *ngIf="!showNovoForm()"
         title="Tarefas"
         subtitle="Listagem com filtros de Status, Produto e Tipo"
+        [btnAddNew]="abrirNovoForm"
+        [btnClose]="false"
         [rows]="filteredTarefas()"
         [columns]="columns"
         [pageSize]="pageSize">

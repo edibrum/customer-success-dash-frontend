@@ -46,3 +46,62 @@
 .clear-btn:hover {
   background: rgba(31, 122, 58, 0.08);
 }
+
+.new-btn {
+  height: 32px;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(31, 122, 58, 0.2);
+  border-radius: 8px;
+  background: var(--green-700);
+  color: #fff;
+  margin-left: auto;
+  align-self: end;
+}
+.new-btn:hover {
+  filter: brightness(0.95);
+}
+.novo-form {
+  border: 1px solid rgba(31, 122, 58, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  background: #fff;
+}
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+.form-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--brown-700);
+}
+.form-row input[type="text"],
+.form-row textarea,
+.form-row select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid rgba(31, 122, 58, 0.2);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--brown-700);
+  min-width: 220px;
+}
+.form-row label.full {
+  flex: 1 1 100%;
+}
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.save-btn {
+  height: 32px;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(31, 122, 58, 0.2);
+  border-radius: 8px;
+  background: var(--green-700);
+  color: #fff;
+}
